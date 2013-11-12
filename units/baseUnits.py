@@ -9,15 +9,17 @@ class Singelton(type):
 class BaseUnit(object):
     __metaclass__ = Singelton
     _metricBaseUnit = None
+    _type = None
     
-    # metricBaseUnit is how I plan on dealing with complicated conversions
-    # everything will be required to have a conversion to and from
+    # metricBaseUnit is how I deal with complicated conversions
+    # every unit is required to have a conversion to and from
     # the "metricBaseUnit"
     def _getMetricBaseUnit(self):
         return self._metricBaseUnit
-    
     def _isMetricBaseUnit(self):
         self.getMetricBaseUnit() is self
+    def getType(self):
+        return self._type
     
     # Methods to convert either to or from another unit
     # These should be implemented for all units other than the metricBaseUnit
@@ -45,7 +47,9 @@ class Unitless(BaseUnit):
 
 # Units grouped by type
 class Distance(BaseUnit):
-    pass
+    def __new__(cls):
+        Distance._type = Distance
+        return super(Distance, cls).__new__(cls)
 class Meter(Distance, Metric):
     def __init__(self):
         Distance._metricBaseUnit = self
@@ -55,7 +59,9 @@ class Foot(Distance):
 foot = Foot()
 
 class Mass(BaseUnit):
-    pass
+    def __new__(cls):
+        Mass._type = Mass
+        return super(Mass, cls).__new__(cls)
 class Kilogram(Mass, Metric):
     def __init__(self):
         Mass._metricBaseUnit = self
@@ -65,7 +71,9 @@ class Slug(Mass):
 slug = Slug()
 
 class Time(BaseUnit):
-    pass
+    def __new__(cls):
+        Time._type = Time
+        return super(Time, cls).__new__(cls)
 class Second(Time, Metric):
     def __init__(self):
         Time._metricBaseUnit = self

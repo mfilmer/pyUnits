@@ -1,7 +1,7 @@
 # Numbers with units, makes doing math easy!
 # or something like that...
 
-import fractions as frac
+from fractions import Fraction
 from numbers import Number
 
 import baseUnits
@@ -11,12 +11,14 @@ def sqrt():
     pass
 # Verify that the provided unit is a base unit
 def isBaseUnit(unit):
-    return isinstance(BaseUnit, unit) and unit is not BaseUnit
+    return isinstance(BaseUnit, unit) and \
+    unit is not BaseUnit() and \
+    unit is not unit.getType()()
 # Get the type of the unit
 # ex: meter*kilogram -> distance*mass
-def getUnitType(unit):
+def getType(unit):
     if isBaseUnit(unit):
-        pass
+        return unit.getType()
     else:
         pass
 # Verify that provided units are of the same type
@@ -39,15 +41,15 @@ class Measure(object):
 # A unit composed of multiple units with varying powers
 class Unit(object):
     def __init__(self,*args):
-        self.__units = dict()
+        self._units = dict()
         for unit in args:
             if isBaseUnit(unit):
-                pass
+                self._units = {unit.getType(): (unit, Fraction(1))}
             elif len(unit) == 2:
-                pass
+                type = unit[0].getType()
+                if type in self._units:
+                    pass
+                else:
+                    pass
             else:
                 raise ValueError
-
-# Maybe how I will deal with more complicated units such as Joules (kg*m^2/s^2)
-class CompositeUnit(object):
-    __metaclass__ = Singelton
