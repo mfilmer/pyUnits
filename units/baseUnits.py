@@ -38,6 +38,7 @@ class BaseUnit(object):
 class Metric(object):
     pass
 
+##### Units #####
 # Unitless is a special case unit type
 class Unitless(BaseUnit):
     pass
