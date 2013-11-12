@@ -65,18 +65,26 @@ class Measure(object):
 class Unit(object):
     def __init__(self,*args):
         self._units = dict()
-        for unit in args:
-            if isBaseUnit(unit):
-                self._units = {unit.getType(): (unit, Fraction(1))}
-            elif len(unit) == 2:
-                type = unit[0].getType()
+        for inUnit in args:
+            if isBaseUnit(inUnit):
+                self._units = {inUnit.getType(): (inUnit, Fraction(1))}
+            elif isinstance(inUnit, Unit):
+                for type, (unit, power) in inUnit._units.iteritems():
+                    if type not in self._units:
+                        self._units[type] = (unit, power)
+                    else:
+                        # Deal with converting units
+                        # Probably deal with this later...
+                        pass
+            elif len(inUnit) == 2:
+                type = inUnit[0].getType()
                 if type in self._units:
                     # Will need to convert to the other type
 					# But really... people shouldn't be providing
-					# units like "kg*slug*meter*foot"... thats just silly
+					# units like "kg*slug*meter*foot"... that's just silly
 					pass
                 else:
-                    self._units[type] = (unit[0], Fraction(unit[1]))
+                    self._units[type] = (inUnit[0], Fraction(inUnit[1]))
             else:
                 raise ValueError
     
