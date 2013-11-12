@@ -119,8 +119,10 @@ class Unit(object):
     def isCompatible(self, other):
         if len(self._units) != len(other._units):
             return False
-        for key in self._units.iterkeys():
+        for key, (type, power) in self._units.iteritems():
             if key not in other._units:
+                return False
+            if power != other._units[key][1]:
                 return False
         return True
     
