@@ -7,8 +7,7 @@ from numbers import Number
 import baseUnits
 
 ##### Functions #####
-def sqrt():
-    pass
+
 # Get the type of the unit
 # ex: meter*kilogram -> distance*mass
 def getType(unit):
@@ -16,22 +15,13 @@ def getType(unit):
         return unit.getType()
     else:
         pass
-# Verify that provided units are of the same type
-def areUnitsCompatible(unitA, unitB):
-    pass
 
 ##### Objects #####
 # A combination of a unit and a value
 class Measure(object):
     def __init__(self, value, *args):
         self._value = value
-        nargs = len(args)
-        if nargs == 0:
-            self._unit = units.Unitless()
-        elif nargs == 1 and isinstance(args[0], Unit):
-                self._unit = args[0]
-        else:
-            self._unit = Unit(*args)
+        self._unit = Unit(*args)
 	
 	# Value and Unit extraction methods
     def getValue(self):
@@ -59,7 +49,6 @@ class Measure(object):
             return Measure(self._value, self._unit * other)
         else:
             return NotImplemented
-        return self
     
     def __div__(self, other):
         return NotImplemented
@@ -125,6 +114,15 @@ class Unit(object):
     
     def isUnitless(self):
         return len(self._units) == 0
+    
+    # Verify that the provided unit is of the same type as self
+    def isCompatible(self, other):
+        if len(self._units) != len(other._units):
+            return False
+        for key in self._units.iterkeys():
+            if key not in other._units:
+                return False
+        return True
     
     def __str__(self):
         string = ""

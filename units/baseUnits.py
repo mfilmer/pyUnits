@@ -74,19 +74,11 @@ class BaseUnit(object):
         return NotImplemented
 
 # Units that are from the metric system will inherit from this class
-# It will do something in the future to make conversions easier
+# It will (hopefully) do something in the future to make conversions easier
 class Metric(object):
     pass
 
 ##### Units #####
-# Unitless is a special case unit type
-class Unitless(BaseUnit):
-    _name = ''
-    _names = ''
-    _abbr = ''
-unitless = Unitless()
-
-# Units grouped by type
 class Distance(BaseUnit):
     def __new__(cls):
         Distance._type = Distance
