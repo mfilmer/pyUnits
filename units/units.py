@@ -51,11 +51,16 @@ class Measure(object):
             return NotImplemented
     
     def __div__(self, other):
+        if isinstance(other, Measure):
+            return Measure.__rdiv__(other, self)
+        if isinstance(other, (Unit, baseUnits.BaseUnit)):
+            return Measure(self._value, self._unit / other)
         return NotImplemented
-        #return Measure.__rdiv__(self, other)
     def __rdiv__(self, other):
         if isinstance(other, Measure):
-            return Measure(self._value / other._value, self._unit / other._unit)
+            return Measure(other._value / self._value, other._unit / self._unit)
+        if isinstance(other, (Unit, baseUnits.BaseUnit)):
+            return Measure(1 / self._value, other / self._unit)
         else:
             return NotImplemented
     
@@ -126,6 +131,12 @@ class Unit(object):
                 return False
         return True
     
+    def getInverse(self):
+        inverseUnit = Unit(self)        # Make a copy of self
+        for type, (unit, power) in self._units.iteritems():
+            inverseUnit._units[type] = (unit, -1*power)
+        return inverseUnit
+    
     def __str__(self):
         string = ""
         for unit, power in self._units.itervalues():
@@ -145,13 +156,15 @@ class Unit(object):
         return NotImplemented
     
     def __div__(self, other):
-        #return NotImplemented
-        return Unit.__rdiv__(other, self)
+        if isinstance(other, Unit):
+            return Unit.__rdiv__(other, self)
+        if isinstance(other, baseUnits.BaseUnit):
+            return Unit.__mul__(self, Unit(other).getInverse())
+        return NotImplemented
     def __rdiv__(self, other):
-        inverseUnit = Unit(self)        # Make a copy of self
-        for type, (unit, power) in self._units.iteritems():
-            inverseUnit._units[type] = (unit, -1*power)
-        return Unit.__rmul__(inverseUnit, other)
+        if isinstance(other, (Unit, baseUnits.BaseUnit)):
+            return Unit.__rmul__(self.getInverse(), other)
+        return NotImplemented
     
     def __pow__(self, other):
         if other == 0:
