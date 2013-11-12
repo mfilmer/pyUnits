@@ -24,8 +24,12 @@ class Measure(object):
         self._unit = Unit(*args)
 	
 	# Value and Unit extraction methods
-    def getValue(self):
-        return self._value
+    def getValue(self, desiredUnit = None):
+        if desiredUnit is None:
+            return self._value
+        if not self.isCompatible(desiredUnit)
+            raise ValueError
+        #go about the long process of converting units
     def getUnit(self):
         return self._unit
     def isUnitless(self):
@@ -167,9 +171,10 @@ class Unit(object):
         return NotImplemented
     
     def __pow__(self, other):
-        if other == 0:
-            return {}
         powerUnit = Unit(self)
+        if other == 0:
+            powerUnit._units = {}
+            return powerUnit
         for type, (unit, power) in self._units.iteritems():
             powerUnit._units[type] = (unit, other * power)
         return powerUnit
