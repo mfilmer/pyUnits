@@ -39,25 +39,27 @@ class Measure(object):
             self._unit = Unit(*args)
 	
 	# Value and Unit extraction methods
-	def getValue(self):
-		return self._value
-	def getUnit(self):
-		return self._unit
+    def getValue(self):
+        return self._value
+    def getUnit(self):
+        return self._unit
 	
 	# Magic Methods
-	def __mul__(self, other):
-		return Measure.__rmul__(other, self)
-	def __rmul__(self, other):
-		if isinstance(other, Number):
-			self._value *= Number
-		elif isinstance(other, Measure):
-			self._value *= other._value
-			self._unit *= other._unit
-		elif isinstance(other, baseUnits.BaseUnit) or isinstance(other, Unit):
-			self._unit *= other
-		else:
-			return NotImplemented
-		return self
+    def __str__(self):
+        return str(self._value) + ' ' + str(self._unit)
+    
+    def __mul__(self, other):
+        return Measure.__rmul__(other, self)
+    def __rmul__(self, other):
+        if isinstance(other, Number):
+            return Measure(self._value * Number, self._unit)
+        elif isinstance(other, Measure):
+            return Measure(self._value * other._value, self._unit * other._unit)
+        elif isinstance(other, baseUnits.BaseUnit) or isinstance(other, Unit):
+            return Measure(self._value, self._unit * other)
+        else:
+            return NotImplemented
+        return self
 
 # A unit composed of multiple units, each with varying powers
 class Unit(object):
@@ -77,3 +79,19 @@ class Unit(object):
                     self._units[type] = (unit[0], Fraction(unit[1]))
             else:
                 raise ValueError
+    
+    def __str__(self):
+        string = ""
+        for unit, power in self._units.itervalues():
+            string += unit.getAbbr() + '^(' + str(power) + ')*'
+        return string[:-1]
+    
+    def __mul__(self, other):
+        return Unit.__mul__(other, self)
+    def __mul__(self, other):
+        if isinstance(other, Number):
+            return Measure(other, self)
+        elif isinstance(other, Unit):
+            return Unit(self, other)
+        else:
+            return NotImplemented
