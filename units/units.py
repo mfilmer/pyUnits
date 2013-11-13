@@ -69,11 +69,25 @@ class Measure(object):
             return NotImplemented
     
     def __add__(self, other):
-        return NotImplemented
-        #return Measure.__radd__(other, self)
+        if not isinstance(other, Measure):
+            return NotImplemented
+        if not self._units.isCompatible(other._units):
+            raise ValueError('Incompatible units for addition')
     def __radd__(self, other):
+        if isinstance(other, Measure):
+            return Measure.__add__(other, self)
         return NotImplemented
-
+    
+    def __sub__(self, other):
+        if not isinstance(other, Measure):
+            return NotImplemented
+        if not self._units.isCompatible(other._units):
+            raise ValueError('Incompatible units for subtraction')
+    def __rsub__(self, other):
+        if isinstance(other, Measure):
+            return Measure.__sub__(other, self):
+        return NotImplemented
+    
     def __pow__(self, other):
         return Measure(self._value ** other, self._unit ** other)
     def __rpow__(self, other):
@@ -182,3 +196,8 @@ class Unit(object):
     # something like 4^meter
     def __rpow__(self, other):
         return NotImplemented
+
+# Special object used instead of a unit when the measure in
+# question is unitless
+class Unitless(object):
+    pass
