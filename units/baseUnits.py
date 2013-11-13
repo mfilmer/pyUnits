@@ -64,9 +64,9 @@ class BaseUnit(object):
             return units.Unit(self, other)
         return NotImplemented
     
-    def __pow__(base, exponent):
-        if isinstance(exponent, Number):
-            return units.Unit((base, exponent))
+    def __pow__(self, other):
+        if isinstance(other, Number):
+            return units.Unit((self, other))
         return NotImplemented
     # This will probably remain not implemented forever as it isn't really
     # possible to do something like 2^meter

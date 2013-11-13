@@ -27,7 +27,7 @@ class Measure(object):
     def getValue(self, desiredUnit = None):
         if desiredUnit is None:
             return self._value
-        if not self.isCompatible(desiredUnit)
+        if not self.isCompatible(desiredUnit):
             raise ValueError
         #go about the long process of converting units
     def getUnit(self):
@@ -79,7 +79,7 @@ class Measure(object):
     def __rpow__(self, other):
         if self.isUnitless():
             return other ** self._value
-        return NotImplemented
+        raise ValueError('Exponent must be unitless')
 
 # A unit composed of multiple units, each with varying powers
 class Unit(object):
