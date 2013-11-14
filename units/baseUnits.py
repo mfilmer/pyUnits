@@ -38,10 +38,10 @@ class BaseUnit(object):
     
     # Methods to convert either to or from the metricBaseUnit
     # These should be implemented for all units other than the MBU
-    def _toMBU(self, value):
-        return value / self._conversionFactor
-    def _fromMBU(self, value):
-        return value * self._conversionFactor
+    def _toMBU(self, value, power = 1):
+        return value / self._conversionFactor ** power
+    def _fromMBU(self, value, power = 1):
+        return value * self._conversionFactor ** power
     
     # Text representation of a unit
     def getAbbr(self):

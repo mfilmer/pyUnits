@@ -34,6 +34,9 @@ class Measure(object):
         return self._unit
     def isUnitless(self):
         return self._unit.isUnitless()
+    def toUnit(inUnit):
+        value = self._value
+        pass
 	
 	# Magic Methods
     def __str__(self):
@@ -85,7 +88,7 @@ class Measure(object):
             raise ValueError('Incompatible units for subtraction')
     def __rsub__(self, other):
         if isinstance(other, Measure):
-            return Measure.__sub__(other, self):
+            return Measure.__sub__(other, self)
         return NotImplemented
     
     def __pow__(self, other):
