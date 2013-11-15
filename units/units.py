@@ -38,7 +38,7 @@ class Measure(object):
         return Measure.__rmul__(self, other)
     def __rmul__(self, other):
         if isinstance(other, Number):
-            return Measure(self._value * Number, self._unit)
+            return Measure(self._value * other, self._unit)
         elif isinstance(other, Measure):
             otherValue = other.getValue()
             (otherValue, otherUnit) = \
@@ -81,6 +81,7 @@ class Measure(object):
             return NotImplemented
         if not self._unit.isCompatible(other._unit):
             raise ValueError('Incompatible units for subtraction')
+        return self + (-1)*other
     def __rsub__(self, other):
         if isinstance(other, Measure):
             return Measure.__sub__(other, self)
