@@ -14,23 +14,23 @@ class Measure(object):
         self._unit = Unit(*args)
 	
 	# Value and Unit extraction methods
+    def toUnit(self, inUnit = None):
+        return Measure(self._unit.convertTo(inUnit, self._value), inUnit)
     def getValue(self, desiredUnit = None):
         if desiredUnit is None:
             return self._value
         if not self.isCompatible(desiredUnit):
-            raise ValueError
-        #go about the long process of converting units
+            raise ValueError('Incompatible units')
+        return self.toUnit(desiredUnit).getValue()
     def getUnit(self):
         return self._unit
     def isUnitless(self):
         return self._unit.isUnitless()
-    def toUnit(self, inUnit):
-        return Measure(self._unit.convertTo(inUnit, self._value), inUnit)
     
 	# Magic Methods
     def __str__(self):
         return str(self._value) + ' ' + str(self._unit)
-    # For now at least
+    # For now repr is str
     def __repr__(self):
         return self.__str__()
     
@@ -102,6 +102,8 @@ class Unit(object):
                         self._units[type] = (inUnit, newPower)
                     else:
                         self._units.pop(inType)
+                else:
+                    raise ValueError("Can't combine the given units")
             elif isinstance(inUnit, Unit):
                 for type, (unit, power) in inUnit._units.iteritems():
                     if type not in self._units:
@@ -113,17 +115,19 @@ class Unit(object):
                         else:
                             self._units.pop(type)
                     else:
-                        # TODO: Deal with converting units
-                        pass
+                        raise ValueError("Can't combine the given units")
             elif len(inUnit) == 2:
                 type = inUnit[0].getType()
-                if type in self._units:
-                    # Will need to convert to the other type
-					# But really... people shouldn't be providing
-					# units like "kg*slug*meter*foot", that's just silly
-					pass
-                else:
+                if type not in self._units:
                     self._units[type] = (inUnit[0], Fraction(inUnit[1]))
+                elif self._units[type][0] is inUnit[0]:
+                    newPower = self._units[type][1] + inUnit[1]
+                    if newPower != 0:
+                        self._units[type] = (inUnit[0], newPower)
+                    else:
+                        self._units.pop(type)
+                else:
+                    raise ValueError("Can't combine the given units")
             else:
                 raise ValueError
     
@@ -171,6 +175,13 @@ class Unit(object):
     # For now repr is str
     def __repr__(self):
         return Unit.__str__(self)
+    
+    def __eq__(self, other):
+        for type, unit in self._units.iteritems():
+            if other._units[type] != unit:
+                print other._units[type], type
+                return False
+        return True
     
     def __mul__(self, other):
         return Unit.__rmul__(self, other)
