@@ -6,16 +6,6 @@ from numbers import Number
 
 import baseUnits
 
-##### Functions #####
-
-# Get the type of the unit
-# ex: meter*kilogram -> distance*mass
-def getType(unit):
-    if baseUnits.isBaseUnit(unit):
-        return unit.getType()
-    else:
-        pass
-
 ##### Objects #####
 # A combination of a unit and a value
 class Measure(object):
@@ -34,10 +24,9 @@ class Measure(object):
         return self._unit
     def isUnitless(self):
         return self._unit.isUnitless()
-    def toUnit(inUnit):
-        value = self._value
-        pass
-	
+    def toUnit(self, inUnit):
+        return Measure(self._unit.convertTo(inUnit, self._value), inUnit)
+    
 	# Magic Methods
     def __str__(self):
         return str(self._value) + ' ' + str(self._unit)
@@ -152,11 +141,27 @@ class Unit(object):
                 return False
         return True
     
+    def getType(self):
+        outType = {}
+        for type, (unit, power) in self._units:
+            outType[type] = power
+        return outType
+    
     def getInverse(self):
         inverseUnit = Unit(self)        # Make a copy of self
         for type, (unit, power) in self._units.iteritems():
             inverseUnit._units[type] = (unit, -1*power)
         return inverseUnit
+    
+    def convertTo(self, inUnit, value):
+        if not self.isCompatible(inUnit):
+            raise ValueError
+        for type, (unit, power) in self._units.iteritems():
+            if unit is not inUnit._units[type][0]:
+                if not unit._isMetricBaseUnit():
+                    value = unit._toMBU(value, power)
+                value = inUnit._units[type][0]._fromMBU(value, power)
+        return value
     
     def __str__(self):
         string = ""

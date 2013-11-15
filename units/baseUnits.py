@@ -32,7 +32,7 @@ class BaseUnit(object):
     def _getMetricBaseUnit(self):
         return self._metricBaseUnit
     def _isMetricBaseUnit(self):
-        self.getMetricBaseUnit() is self
+        self._getMetricBaseUnit() is self
     def getType(self):
         return self._type
     
