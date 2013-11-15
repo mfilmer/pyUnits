@@ -66,8 +66,11 @@ class Measure(object):
     def __add__(self, other):
         if not isinstance(other, Measure):
             return NotImplemented
-        if not self._units.isCompatible(other._units):
+        if not self._unit.isCompatible(other._unit):
             raise ValueError('Incompatible units for addition')
+        if self._unit != other._unit:
+            other = other.toUnit(self._unit)
+        return Measure(self._value + other._value, self._unit)
     def __radd__(self, other):
         if isinstance(other, Measure):
             return Measure.__add__(other, self)
@@ -76,7 +79,7 @@ class Measure(object):
     def __sub__(self, other):
         if not isinstance(other, Measure):
             return NotImplemented
-        if not self._units.isCompatible(other._units):
+        if not self._unit.isCompatible(other._unit):
             raise ValueError('Incompatible units for subtraction')
     def __rsub__(self, other):
         if isinstance(other, Measure):
