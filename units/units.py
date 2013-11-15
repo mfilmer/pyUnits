@@ -40,7 +40,10 @@ class Measure(object):
         if isinstance(other, Number):
             return Measure(self._value * Number, self._unit)
         elif isinstance(other, Measure):
-            return Measure(self._value * other._value, self._unit * other._unit)
+            otherValue = other.getValue()
+            (otherValue, otherUnit) = \
+                    other.getUnit().matchUnit(self.getUnit(), otherValue)
+            return Measure(self._value * otherValue, self._unit * otherUnit)
         elif isinstance(other, baseUnits.BaseUnit) or isinstance(other, Unit):
             return Measure(self._value, self._unit * other)
         else:
@@ -166,6 +169,20 @@ class Unit(object):
                     value = unit._toMBU(value, power)
                 value = inUnit._units[type][0]._fromMBU(value, power)
         return value
+    
+    def matchUnit(self, targetUnit, value):
+        newUnit = Unit(self)
+        for type, (unit, power) in self._units.iteritems():
+            if type in targetUnit._units:
+                if targetUnit._units[type] != (unit, power):
+                    if targetUnit._units[type][1] != power:
+                        raise ValueError('Power mismatch')
+                    if not unit._isMetricBaseUnit():
+                        value = unit._toMBU(value, power)
+                        newUnit._units[type] = (unit, power)
+                    value = targetUnit._units[type][0]._fromMBU(value, power)
+                    newUnit._units[type] = (targetUnit._units[type][0], power)
+        return (value, newUnit)
     
     def __str__(self):
         string = ""
